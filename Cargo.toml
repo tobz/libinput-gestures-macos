@@ -1,0 +1,12 @@
+[package]
+name = "libinput-gestures-oxidized"
+version = "0.1.0"
+authors = ["Toby Lawrence <toby@nuclearfurnance.com>"]
+edition = "2018"
+
+[dependencies]
+input = "^0.4"
+nix = "^0.16"
+tokio = { path = "../tokio/tokio", features = ["rt-threaded", "process"] }
+mio = "^0.6"
+futures = { version = "^0.3", default-features = false, features = ["std"] }
