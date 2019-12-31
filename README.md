@@ -32,7 +32,7 @@ Based on the [`input`](https://github.com/Smithay/input.rs) crate to parse `libi
 4.) Build and run the project.  (You need [Rust](https://www.rust-lang.org/tools/install) for this.)
 
     cargo build --release
-    target/release/libinput-gestrures-macos
+    target/release/libinput-gestures-macos
 
 5.) Switch to another window -- a browser is ideal obviously -- and you should be able to two-finger swipe to go forwards and backwards.
 
