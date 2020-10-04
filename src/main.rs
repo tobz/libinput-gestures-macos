@@ -19,10 +19,10 @@ use std::task::Poll as FuturesPoll;
 use tokio::io::PollEvented;
 use tokio::process::Command;
 
-const TOUCH_DEVICE: &str = "/dev/input/event6";
+const TOUCH_DEVICE: &str = "/dev/input/by-path/pci-0000:00:15.1-platform-i2c_designware.1-event-mouse";
 const SWIPE_VDELTA_THRESHOLD: f64 = 0.00175;
-const LEFT_SWIPE_ACTION: &[&str] = &["key", "alt+Right"];
-const RIGHT_SWIPE_ACTION: &[&str] = &["key", "alt+Left"];
+const LEFT_SWIPE_ACTION: &[&str] = &["key", "super+shift+Left"];
+const RIGHT_SWIPE_ACTION: &[&str] = &["key", "super+shift+Right"];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut rt = tokio::runtime::Runtime::new()?;
