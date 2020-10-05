@@ -11,18 +11,19 @@ use nix::{
     sys::stat::Mode,
     unistd::close,
 };
+use std::io::Error;
 use std::os::unix::io::AsRawFd;
 use std::os::unix::io::RawFd;
 use std::path::Path;
-use std::process::Stdio;
+use std::process::{Command, Stdio};
 use std::task::Poll as FuturesPoll;
 use tokio::io::PollEvented;
-use tokio::process::Command;
 
-const TOUCH_DEVICE: &str = "/dev/input/event6";
+const TOUCH_DEVICE: &str =
+    "/dev/input/by-path/pci-0000:00:15.1-platform-i2c_designware.1-event-mouse";
 const SWIPE_VDELTA_THRESHOLD: f64 = 0.00175;
-const LEFT_SWIPE_ACTION: &[&str] = &["key", "alt+Right"];
-const RIGHT_SWIPE_ACTION: &[&str] = &["key", "alt+Left"];
+const LEFT_SWIPE_ACTION: &[&str] = &["key", "super+shift+Left"];
+const RIGHT_SWIPE_ACTION: &[&str] = &["key", "super+shift+Right"];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut rt = tokio::runtime::Runtime::new()?;
@@ -78,7 +79,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             // and right or their touchpad picked up something weird.
                             if let Some((vdelta, cmd)) = result {
                                 if vdelta.abs() >= SWIPE_VDELTA_THRESHOLD {
-                                    launch_xdotool(cmd);
+                                    let _ = launch_xdotool(cmd);
                                 }
                             }
                         }
@@ -93,13 +94,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })
 }
 
-fn launch_xdotool(cmd_opts: &[&str]) {
-    let mut cmd = Command::new("xdotool");
-    cmd.args(cmd_opts)
+fn launch_xdotool(cmd_opts: &[&str]) -> Result<(), Error> {
+    Command::new("xdotool")
+        .args(cmd_opts)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::null());
-    let _ = cmd.spawn();
+        .stderr(Stdio::null())
+        .spawn()?
+        .wait_with_output()?;
+
+    Ok(())
 }
 
 // Tracks the velocity of a swipe.
