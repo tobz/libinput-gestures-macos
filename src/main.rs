@@ -78,7 +78,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             // and right or their touchpad picked up something weird.
                             if let Some((vdelta, cmd)) = result {
                                 if vdelta.abs() >= SWIPE_VDELTA_THRESHOLD {
-                                    launch_xdotool(cmd);
+                                    let _ = launch_xdotool(cmd);
                                 }
                             }
                         }
@@ -93,13 +93,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })
 }
 
-fn launch_xdotool(cmd_opts: &[&str]) {
-    let mut cmd = Command::new("xdotool");
-    cmd.args(cmd_opts)
+fn launch_xdotool(cmd_opts: &[&str]) -> Result<(), Error> {
+    Command::new("xdotool")
+        .args(cmd_opts)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::null());
-    let _ = cmd.spawn();
+        .stderr(Stdio::null())
+        .spawn()?
+        .wait_with_output()?;
+
+    Ok(())
 }
 
 // Tracks the velocity of a swipe.
