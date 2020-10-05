@@ -11,15 +11,16 @@ use nix::{
     sys::stat::Mode,
     unistd::close,
 };
+use std::io::Error;
 use std::os::unix::io::AsRawFd;
 use std::os::unix::io::RawFd;
 use std::path::Path;
-use std::process::Stdio;
+use std::process::{Command, Stdio};
 use std::task::Poll as FuturesPoll;
 use tokio::io::PollEvented;
-use tokio::process::Command;
 
-const TOUCH_DEVICE: &str = "/dev/input/by-path/pci-0000:00:15.1-platform-i2c_designware.1-event-mouse";
+const TOUCH_DEVICE: &str =
+    "/dev/input/by-path/pci-0000:00:15.1-platform-i2c_designware.1-event-mouse";
 const SWIPE_VDELTA_THRESHOLD: f64 = 0.00175;
 const LEFT_SWIPE_ACTION: &[&str] = &["key", "super+shift+Left"];
 const RIGHT_SWIPE_ACTION: &[&str] = &["key", "super+shift+Right"];
